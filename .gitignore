@@ -1,0 +1,8 @@
+# Executables
+*.exe
+
+# Intermediate files
+*.bc
+*.i
+*.o
+*.s
