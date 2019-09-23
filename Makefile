@@ -16,29 +16,61 @@ ifeq ($(debug), 1)
         -Wstrict-overflow=5 -Wstrict-prototypes -Wundef -Wwrite-strings
 endif
 
-headers = bytestring.h commandline.h
-objects := $(headers:%.h=obj/%.o)
+programs := $(sort $(wildcard s?c?.c))
+bins := $(programs:%.c=bin/%)
+objs := $(programs:%.c=obj/%.o)
+
+module_headers = $(sort $(wildcard *.h))
+module_objs := $(module_headers:%.h=obj/%.o)
+
+test_programs := $(sort $(wildcard test/test_*.c))
+test_bins := $(test_programs:test/%.c=test/bin/%)
+test_objs := $(test_programs:test/%.c=test/obj/%.o)
+unit_tests := $(test_programs:test/%.c=%)
+
+testing_module_headers = $(sort $(wildcard test/*.h))
+testing_module_objs := $(testing_module_headers:test/%.h=test/obj/%.o)
+
+test_scripts := $(sort $(wildcard test/s?c?.sh))
+sh_tests := $(test_scripts:test/%.sh=test_%)
 
 
-.PHONY: all clean
+.PHONY: all test clean $(unit_tests) $(sh_tests)
 .SECONDARY:
 
-all:
-	@echo "Please specify a target, e.g.:"
-	@echo "    make bin/s1c1"
-	@echo "    make clean"
+all: $(bins)
 
-bin/%: obj/%.o $(objects) | bin
+test: $(unit_tests) $(sh_tests)
+
+$(unit_tests): %: test/bin/%
+	@$< || true
+
+$(sh_tests): test_%: bin/%
+	@sh test/$*.sh || true
+
+$(bins): bin/%: obj/%.o $(module_objs) | bin
+
+$(test_bins): test/bin/test_%: test/obj/test_%.o obj/%.o $(testing_module_objs)
+$(test_bins): | test/bin
+
+# The mv command is for compatibility with Windows.
+$(bins) $(test_bins):
 	$(CC) $(CFLAGS) -o $@ $^
+	@[ ! -e $@.exe ] || mv $@.exe $@
 
-$(objects): obj/%.o: %.c %.h | obj
+$(objs) $(module_objs): obj/%.o: %.c | obj
+$(objs): $(module_headers)
+$(module_objs): obj/%.o: %.h
+
+$(test_objs) $(testing_module_objs): test/obj/%.o: test/%.c | test/obj
+$(test_objs): test/obj/test_%.o: %.h $(testing_module_headers)
+$(testing_module_objs): test/obj/%.o: test/%.h
+
+$(objs) $(module_objs) $(test_objs) $(testing_module_objs):
 	$(CC) $(CFLAGS) -c -o $@ $<
 
-obj/%.o: %.c $(headers) | obj
-	$(CC) $(CFLAGS) -c -o $@ $<
-
-bin obj:
+bin obj test/bin test/obj:
 	mkdir $@
 
 clean:
-	rm -f bin/* obj/*
+	rm -f bin/* obj/* test/bin/* test/obj/*
