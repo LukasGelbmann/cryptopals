@@ -3,7 +3,7 @@
 // This program takes as an argument a hex string, which it converts to the
 // base64 encoding and then prints to stdout.
 
-#include "bytestring.h"
+#include "bytes.h"
 #include "commandline.h"
 
 #include <stdbool.h>

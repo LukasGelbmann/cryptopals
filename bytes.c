@@ -1,4 +1,4 @@
-#include "bytestring.h"
+#include "bytes.h"
 
 #include <assert.h>
 #include <ctype.h>

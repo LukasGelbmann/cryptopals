@@ -1,5 +1,5 @@
-#ifndef BYTESTRING_H
-#define BYTESTRING_H
+#ifndef BYTES_H
+#define BYTES_H
 
 // This header defines the type `bytestring` and related tools.
 

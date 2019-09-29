@@ -1,4 +1,4 @@
-#include "../bytestring.h"
+#include "../bytes.h"
 #include "unittest.h"
 
 #include <stdlib.h>
@@ -40,7 +40,7 @@ static void run_decoding_tests(tests_summary *summary)
 
 int main(void)
 {
-    tests_summary summary = {.name = "bytestring"};
+    tests_summary summary = {.name = "bytes"};
 
     free_bytestring(NULL);
     count_passed_test(&summary);
