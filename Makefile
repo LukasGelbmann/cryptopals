@@ -28,27 +28,18 @@ module_objs := $(module_headers:%.h=obj/%.o)
 test_programs := $(sort $(wildcard test/test_*.c))
 test_bins := $(test_programs:test/%.c=test/bin/%)
 test_objs := $(test_programs:test/%.c=test/obj/%.o)
-unit_tests := $(test_programs:test/%.c=%)
 
 testing_module_headers = $(sort $(wildcard test/*.h))
 testing_module_objs := $(testing_module_headers:test/%.h=test/obj/%.o)
 
-test_scripts := $(sort $(wildcard test/s?c?.sh))
-sh_tests := $(test_scripts:test/%.sh=test_%)
 
-
-.PHONY: all test clean $(unit_tests) $(sh_tests)
+.PHONY: all test clean
 .SECONDARY:
 
 all: $(bins)
 
-test: $(unit_tests) $(sh_tests)
-
-$(unit_tests): %: test/bin/%
-	@$< || true
-
-$(sh_tests): test_%: bin/%
-	@sh test/$*.sh || true
+test: $(bins) $(test_bins)
+	@sh test/run_all.sh
 
 $(bins): bin/%: obj/%.o $(module_objs) | bin
 $(test_bins): test/bin/test_%: test/obj/test_%.o
