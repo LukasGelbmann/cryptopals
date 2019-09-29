@@ -11,13 +11,6 @@
 #include <stdlib.h>
 
 
-// Print a usage message to stderr.
-static void print_usage(const char *const argv[])
-{
-    const char *name = program_name(argv, "s1c2");
-    fprintf(stderr, "Usage: %s hexstring_a hexstring_b\n", name);
-}
-
 // Modify `bytes` by performing an XOR with `other`.
 static void inplace_xor(const bytestring *bytes, const bytestring *other)
 {
@@ -52,7 +45,7 @@ static bool print_xor(const char *hex_a, const char *hex_b)
 int main(int argc, const char *const argv[])
 {
     if (argc != 3) {
-        print_usage(argv);
+        print_usage(argv, "s1c2", "hexstring_a hexstring_b");
         return EXIT_FAILURE;
     }
     if (!print_xor(argv[1], argv[2])) {

@@ -18,13 +18,6 @@ static const char base64_digits[64] =
 static const char padding = '=';
 
 
-// Print a usage message to stderr.
-static void print_usage(const char *const argv[])
-{
-    const char *name = program_name(argv, "s1c1");
-    fprintf(stderr, "Usage: %s hexstring\n", name);
-}
-
 // Print the base64 representation of a bytestring.
 static void print_as_base64(const bytestring *bytes)
 {
@@ -71,7 +64,7 @@ static bool print_base64_from_hex(const char *hex)
 int main(int argc, const char *const argv[])
 {
     if (argc != 2) {
-        print_usage(argv);
+        print_usage(argv, "s1c1", "hexstring");
         return EXIT_FAILURE;
     }
     if (!print_base64_from_hex(argv[1])) {

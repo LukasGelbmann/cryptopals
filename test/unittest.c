@@ -27,6 +27,17 @@ void print_summary(const tests_summary *summary)
     printf("test%s and failed %d.%s\n", ending, summary->failed, end);
 }
 
+void print_failure_context(const char *program_name, const char *test_name)
+{
+    printf("[%s] Failed test %s: ", program_name, test_name);
+}
+
+// Print a message describing a failed test.
+static void print_failure(const tests_summary *summary, const char *message)
+{
+    printf("[%s] Failed test: %s\n", summary->name, message);
+}
+
 // Update the counters of passed and failed tests.
 static void count_test(bool passed, tests_summary *summary)
 {
@@ -42,10 +53,15 @@ void count_passed_test(tests_summary *summary)
     count_test(true, summary);
 }
 
+void run_test(bool (*test)(const char *program_name), tests_summary *summary)
+{
+    count_test(test(summary->name), summary);
+}
+
 void test_that(bool passed, tests_summary *summary, const char *message)
 {
     if (!passed) {
-        printf("[%s] Failed test: %s\n", summary->name, message);
+        print_failure(summary, message);
     }
     count_test(passed, summary);
 }
@@ -55,7 +71,7 @@ void test_str_equals(const char *result, const char *expected,
 {
     bool passed = strcmp(result, expected) == 0;
     if (!passed) {
-        printf("[%s] Failed test %s: ", summary->name, test_name);
+        print_failure_context(summary->name, test_name);
         printf("expected \"%s\", got \"%s\"\n", expected, result);
     }
     count_test(passed, summary);
