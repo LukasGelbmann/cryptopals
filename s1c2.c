@@ -3,7 +3,7 @@
 // This program takes two hex strings as its arguments and outputs their XOR
 // combination.
 
-#include "bytestring.h"
+#include "bytes.h"
 #include "commandline.h"
 
 #include <stdbool.h>
