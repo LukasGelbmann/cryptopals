@@ -16,8 +16,14 @@ typedef struct {
 // Print how many tests we passed and how many we failed.
 void print_summary(const tests_summary *summary);
 
+// Print the start of a message describing a failed test.
+void print_failure_context(const char *program_name, const char *test_name);
+
 // Increase the counter of passed tests by one.
 void count_passed_test(tests_summary *summary);
+
+// Run a test and update the counters of passed and failed tests.
+void run_test(bool (*test)(const char *program_name), tests_summary *summary);
 
 // Record a test that checks whether a condition is true.
 void test_that(bool passed, tests_summary *summary, const char *message);

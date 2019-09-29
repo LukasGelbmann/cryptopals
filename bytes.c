@@ -17,6 +17,14 @@
 #define CHAR_REPR_SIZE (CHAR_BIT / 4 + 3)
 
 
+const unsigned char first_printable_ascii = 32;
+const unsigned char last_printable_ascii = 126;
+
+static const char printable_ascii[95] =
+    " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdef"
+    "ghijklmnopqrstuvwxyz{|}~";
+
+
 void free_bytestring(bytestring *bytes)
 {
     free(bytes);
@@ -104,4 +112,61 @@ void print_as_hex(const bytestring *bytes)
         printf("%02x", bytes->data[i]);
     }
     printf("\n");
+}
+
+bool is_printable_ascii(unsigned char byte)
+{
+    return first_printable_ascii <= byte && byte <= last_printable_ascii;
+}
+
+// Decode a byte as ASCII, print it, and return true on success.
+//
+// This function returns true if `byte` stands for a character that we can
+// portably output (this is the case for all printable ASCII characters and
+// some others).
+//
+static bool print_byte_as_ascii(unsigned char byte)
+{
+    if (is_printable_ascii(byte)) {
+        putchar(printable_ascii[byte - first_printable_ascii]);
+        return true;
+    }
+
+    switch (byte) {
+    case 0x07:
+        putchar('\a');
+        return true;
+    case 0x08:
+        putchar('\b');
+        return true;
+    case 0x09:
+        putchar('\t');
+        return true;
+    case 0x0a:
+        putchar('\n');
+        return true;
+    case 0x0b:
+        putchar('\v');
+        return true;
+    case 0x0c:
+        putchar('\f');
+        return true;
+    case 0x0d:
+        putchar('\r');
+        return true;
+    }
+
+    return false;
+}
+
+bool print_as_ascii(const bytestring *bytes)
+{
+    bool success = true;
+    for (size_t i = 0; i < bytes->len; i++) {
+        if (!print_byte_as_ascii(bytes->data[i])) {
+            success = false;
+        }
+    }
+    printf("\n");
+    return success;
 }
